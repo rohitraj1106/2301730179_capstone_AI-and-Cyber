@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SentinelMesh AI — Enterprise Threat Detection &amp; Prevention System Design Report</title>
+  <style>
+    :root {
+      --navy: #0f172a;
+      --blue: #1d4ed8;
+      --sky: #0284c7;
+      --slate: #334155;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --bg-soft: #f8fafc;
+      --accent-red: #dc2626;
+      --accent-green: #059669;
+      --accent-amber: #d97706;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
+      color: var(--navy);
+      line-height: 1.48;
+      font-size: 9.8pt;
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
+    .cover {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 65%, #0284c7 100%);
+      color: #ffffff;
+      padding: 36px 32px 30px 32px;
+      border-radius: 10px;
+      margin-bottom: 22px;
+    }
+    .cover .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 1.6px;
+      font-size: 8.5pt;
+      color: #93c5fd;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .cover h1 {
+      margin: 0 0 10px 0;
+      font-size: 23pt;
+      line-height: 1.18;
+      font-weight: 800;
+      color: #ffffff;
+    }
+    .cover .subtitle {
+      font-size: 11.2pt;
+      color: #e2e8f0;
+      margin: 0 0 18px 0;
+    }
+    .cover-meta {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      border-top: 1px solid rgba(255,255,255,0.22);
+      padding-top: 14px;
+      font-size: 8.8pt;
+    }
+    .cover-meta div strong {
+      display: block;
+      color: #93c5fd;
+      font-size: 7.8pt;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 14px 0 20px 0;
+    }
+    .kpi-card {
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--blue);
+      border-radius: 6px;
+      padding: 10px 12px;
+    }
+    .kpi-card .val {
+      font-size: 15pt;
+      font-weight: 800;
+      color: var(--navy);
+      line-height: 1.15;
+    }
+    .kpi-card .lbl {
+      font-size: 8.2pt;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+    h2 {
+      font-size: 14.5pt;
+      color: var(--navy);
+      border-bottom: 2px solid var(--blue);
+      padding-bottom: 4px;
+      margin-top: 24px;
+      margin-bottom: 10px;
+      page-break-after: avoid;
+    }
+    h3 {
+      font-size: 11.5pt;
+      color: #1e3a8a;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      page-break-after: avoid;
+    }
+    p { margin: 0 0 9px 0; color: #1e293b; }
+    ul, ol { margin: 4px 0 10px 0; padding-left: 20px; }
+    li { margin-bottom: 4px; color: #1e293b; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 14px 0;
+      font-size: 8.8pt;
+    }
+    thead { display: table-header-group; }
+    tr { page-break-inside: avoid; }
+    th {
+      background: #0f172a;
+      color: #ffffff;
+      text-align: left;
+      padding: 7px 8px;
+      font-weight: 600;
+    }
+    td {
+      border-bottom: 1px solid var(--border);
+      padding: 6px 8px;
+      vertical-align: top;
+    }
+    tr:nth-child(even) td { background: #f8fafc; }
+    .callout {
+      background: #eff6ff;
+      border-left: 4px solid var(--blue);
+      padding: 10px 14px;
+      border-radius: 0 6px 6px 0;
+      margin: 10px 0 14px 0;
+      page-break-inside: avoid;
+    }
+    .callout.warn {
+      background: #fffbeb;
+      border-left-color: var(--accent-amber);
+    }
+    .callout.alert {
+      background: #fef2f2;
+      border-left-color: var(--accent-red);
+    }
+    .callout.good {
+      background: #ecfdf5;
+      border-left-color: var(--accent-green);
+    }
+    .stakeholder-card {
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 12px 0 16px 0;
+      page-break-inside: avoid;
+      box-shadow: 0 1px 4px rgba(15,23,42,0.06);
+    }
+    .stakeholder-card .sc-head {
+      background: #991b1b;
+      color: #ffffff;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      font-size: 10pt;
+    }
+    .stakeholder-card .sc-body {
+      padding: 12px 14px;
+      background: #ffffff;
+      font-size: 9.3pt;
+    }
+    .sc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .figure-box {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px;
+      background: #ffffff;
+      margin: 10px 0 14px 0;
+      text-align: center;
+      page-break-inside: avoid;
+    }
+    .figure-box img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+    .figure-cap {
+      font-size: 8.4pt;
+      color: var(--muted);
+      margin-top: 6px;
+      text-align: left;
+    }
+    code {
+      background: #f1f5f9;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 8.8pt;
+      color: #0f172a;
+    }
+    .badge {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-size: 7.8pt;
+      font-weight: 700;
+    }
+    .b-crit { background: #fee2e2; color: #991b1b; }
+    .b-high { background: #ffedd5; color: #9a3412; }
+    .b-ok { background: #dcfce7; color: #166534; }
+    .page-break { page-break-before: always; }
+  </style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="eyebrow">AI &amp; Cybersecurity Capstone Design Report · 120-Mark Specification</div>
+  <h1>SentinelMesh AI: Enterprise Threat Detection &amp; Prevention Architecture</h1>
+  <p class="subtitle">
+    A Hybrid-Cloud, Explainable, and Adversarially Resilient AI Security Platform Designed for Meridian FinTech Inc.
+  </p>
+  <div class="cover-meta">
+    <div><strong>Target Organization</strong>Meridian FinTech Inc. (~500 Employees, 650 Endpoints)</div>
+    <div><strong>Deployment Stack</strong>AWS EKS/IAM, GCP BigQuery, Okta, M365, GitHub</div>
+    <div><strong>Detection Core</strong>XGBoost + PyTorch Autoencoder + Exact TreeSHAP</div>
+    <div><strong>Compliance Posture</strong>PCI-DSS v4.0, SOC 2 Type II, GDPR Art. 22</div>
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="val">0.975 / 0.953</div>
+    <div class="lbl">Test PR-AUC (XGBoost / Hybrid Fusion)</div>
+  </div>
+  <div class="kpi-card">
+    <div class="val">1.87% – 1.90%</div>
+    <div class="lbl">False Positive Rate (Hybrid Fusion)</div>
+  </div>
+  <div class="kpi-card">
+    <div class="val">60.4% → 97.4%</div>
+    <div class="lbl">Evasion Recall Recovery via Hardening</div>
+  </div>
+  <div class="kpi-card">
+    <div class="val">4.37 ms / 1k</div>
+    <div class="lbl">Batch Inference Latency (6.4 GB/day scale)</div>
+  </div>
+</div>
+
+<h2>1. Executive Summary</h2>
+<p>
+  <strong>Scope &amp; Enterprise Context:</strong> Meridian FinTech Inc. operates as a 500-employee hybrid-cloud financial technology SaaS provider managing 650 corporate endpoints across five departments (Engineering 46%, Sales &amp; Customer Success 20%, Finance 14%, Operations 14%, Security &amp; IT 6%). Its production workloads run on AWS Elastic Kubernetes Service (EKS) and GCP BigQuery, authenticated via Okta SSO, Microsoft 365, and GitHub Enterprise. Daily telemetry averages ~1,850 events/second (peak ~7,800 EPS; ~6.4 GB/day compressed).
+</p>
+<p>
+  <strong>Objectives:</strong> SentinelMesh AI is engineered to deliver (1) sub-60-second Mean Time to Detect (MTTD) across both known MITRE ATT&amp;CK behaviors and novel zero-day anomalies, (2) automated confidence-gated containment in under 5 seconds with blast-radius circuit breakers, (3) false positive rates (FPR) below 2% to eliminate Security Operations Center (SOC) alert fatigue, (4) plain-language Explainable AI (XAI) briefings for non-technical executives and compliance officers, and (5) privacy-preserving telemetry ingestion compliant with GDPR and PCI-DSS.
+</p>
+
+<h3>Key Architectural Design Decisions</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Design Choice</th>
+      <th>Alternative Considered</th>
+      <th>Engineering Rationale &amp; Trade-Off</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Hybrid Dual-Engine (XGBoost + PyTorch Autoencoder)</strong></td>
+      <td>Single supervised GBDT or standalone deep neural network</td>
+      <td>XGBoost delivers 0.9753 PR-AUC on known TTPs with native exact TreeSHAP, while the unsupervised PyTorch Autoencoder (trained strictly on benign baselines) preserves zero-day and evasion coverage (0.9846 ROC-AUC without labels).</td>
+    </tr>
+    <tr>
+      <td><strong>Metadata &amp; Sliding-Window Feature Store</strong></td>
+      <td>Full Deep Packet Inspection (DPI) on raw payloads</td>
+      <td>Avoids decrypting employee PII/financial payloads, cuts storage/compute cost by &gt;85% for a mid-sized budget, and supports 4.37 ms per 1,000 events scoring latency.</td>
+    </tr>
+    <tr>
+      <td><strong>HMAC-SHA256 Pseudonymization at Ingestion</strong></td>
+      <td>Plaintext employee emails/IDs in SIEM &amp; ML feature store</td>
+      <td>Prevents unauthorized employee profiling in the analytics layer while allowing deterministic UEBA 30-day baselines and dual-custody break-glass re-identification during verified incidents.</td>
+    </tr>
+    <tr>
+      <td><strong>Confidence-Gated SOAR + Circuit Breaker</strong></td>
+      <td>Binary auto-blocking on all alerts or manual-only SOC queues</td>
+      <td>Automates reversible containment (Okta token revoke, STS deny, EDR isolation) at Risk &ge; 85 while halting automated bulk isolations if &gt;5 hosts trigger in 10 minutes (preventing attacker-induced self-DoS).</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>2. Threat Model &amp; AI/ML Detection Strategy</h2>
+<p>
+  Based on Meridian FinTech's hybrid-cloud FinTech attack surface, SentinelMesh AI prioritizes the <strong>top five high-impact threats</strong> below, pairing each attack vector with a specialized AI/ML detection strategy.
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>ID &amp; Threat Type (MITRE ATT&amp;CK)</th>
+      <th>Enterprise Justification &amp; Asset at Risk</th>
+      <th>AI/ML Detection Strategy</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>T1: Credential Stuffing, AiTM Phishing &amp; Account Takeover</strong><br/><code>T1078, T1110, T1557</code></td>
+      <td><span class="badge b-high">HIGH</span> #1 initial access vector in Okta/M365 SaaS enterprises; adversary-in-the-middle proxies steal session cookies, bypassing push MFA to access Finance &amp; payment portals.</td>
+      <td>Supervised XGBoost on auth velocity (<code>auth_failures_5m</code>, <code>mfa_push_count_5m</code>), impossible travel (<code>geo_velocity_kmph</code>), TLS <code>ja3_rarity_score</code>, and composite <code>identity_risk_compound</code>.</td>
+    </tr>
+    <tr>
+      <td><strong>T2: Living-off-the-Land Lateral Movement &amp; Pre-Ransomware</strong><br/><code>T1059, T1021, T1486</code></td>
+      <td><span class="badge b-crit">CRITICAL</span> Attackers abuse native PowerShell, WMI, SSH, and <code>kubectl</code> to evade signature AV before encrypting FinTech CI/CD &amp; ledger hosts.</td>
+      <td>Process-lineage &amp; behavioral burst detection combining <code>process_lineage_rarity</code>, department-normalized <code>dept_admin_burst_zscore</code>, SMB/SSH <code>internal_port_fanout_15m</code>, and <code>file_rename_entropy</code>.</td>
+    </tr>
+    <tr>
+      <td><strong>T3: Stealthy Data Exfiltration &amp; Staging</strong><br/><code>T1041, T1048, T1567</code></td>
+      <td><span class="badge b-crit">CRITICAL</span> Customer PII and PCI-DSS records in BigQuery/S3 face severe regulatory fines. Low-and-slow staging bypasses static DLP byte thresholds.</td>
+      <td>Unsupervised PyTorch Autoencoder + XGBoost monitoring per-user 30-day deviation (<code>user_bytes_out_zscore</code>), <code>egress_ingress_ratio</code>, and <code>dest_domain_entropy</code>.</td>
+    </tr>
+    <tr>
+      <td><strong>T4: Cloud Control-Plane Privilege Escalation &amp; IAM Abuse</strong><br/><code>T1098, T1548, T1078.004</code></td>
+      <td><span class="badge b-crit">CRITICAL</span> Over-privileged CI/CD or developer IAM tokens can execute cross-account <code>AssumeRole</code> chains to compromise production payment databases in minutes.</td>
+      <td>Control-plane burst &amp; graph-hop features (<code>cloud_iam_sensitive_calls_15m</code>, <code>cross_account_hops</code>) fused with caller <code>ja3_rarity_score</code> and <code>new_asn_flag</code>.</td>
+    </tr>
+    <tr>
+      <td><strong>T5: Encrypted C2 Beaconing &amp; Malware Callback</strong><br/><code>T1071, T1573</code></td>
+      <td><span class="badge b-high">HIGH</span> Persistent HTTPS/DNS C2 maintains attacker footholds even after password resets; TLS encryption hides command payloads.</td>
+      <td>Metadata periodicity &amp; DNS lexical modeling via <code>beacon_periodicity_score</code> (inter-arrival jitter CV), <code>nxdomain_ratio_1h</code>, and DGA <code>dest_domain_entropy</code>.</td>
+    </tr>
+  </tbody>
+</table>
+
+
+<h2>3. System Architecture (End-to-End Pipeline)</h2>
+<p>
+  SentinelMesh AI implements a five-stage streaming architecture designed for cost-effective mid-sized enterprise deployment (~2 vCPU inference nodes, Redis hot feature store, Kafka/Redpanda event bus, and S3 Parquet cold lake).
+</p>
+
+<div class="figure-box">
+  <svg viewBox="0 0 920 230" width="100%" xmlns="http://www.w3.org/2000/svg" style="font-family:Segoe UI,Arial,sans-serif;">
+    <defs>
+      <marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+        <path d="M0,0 L8,4 L0,8 Z" fill="#1d4ed8"/>
+      </marker>
+    </defs>
+    <!-- Stage 1 -->
+    <rect x="8" y="25" width="160" height="175" rx="8" fill="#f8fafc" stroke="#0f172a" stroke-width="1.6"/>
+    <rect x="8" y="25" width="160" height="28" rx="8" fill="#0f172a"/>
+    <text x="88" y="43" fill="#fff" font-size="11" font-weight="700" text-anchor="middle">1. Data Ingestion</text>
+    <text x="18" y="72" fill="#1e293b" font-size="9.5" font-weight="600">Telemetry Sources:</text>
+    <text x="18" y="88" fill="#475569" font-size="8.8">• Okta SSO &amp; M365 Audit</text>
+    <text x="18" y="102" fill="#475569" font-size="8.8">• Sysmon / EDR Process</text>
+    <text x="18" y="116" fill="#475569" font-size="8.8">• Zeek / VPC Flow &amp; DNS</text>
+    <text x="18" y="130" fill="#475569" font-size="8.8">• AWS CloudTrail / GCP</text>
+    <rect x="16" y="146" width="144" height="44" rx="5" fill="#dbeafe" stroke="#1d4ed8"/>
+    <text x="88" y="164" fill="#1e3a8a" font-size="8.8" font-weight="700" text-anchor="middle">Kafka + Schema Check</text>
+    <text x="88" y="179" fill="#1e3a8a" font-size="8.3" text-anchor="middle">HMAC-SHA256 PII Masking</text>
+
+    <line x1="168" y1="112" x2="192" y2="112" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arr)"/>
+
+    <!-- Stage 2 -->
+    <rect x="194" y="25" width="162" height="175" rx="8" fill="#f8fafc" stroke="#0f172a" stroke-width="1.6"/>
+    <rect x="194" y="25" width="162" height="28" rx="8" fill="#1d4ed8"/>
+    <text x="275" y="43" fill="#fff" font-size="11" font-weight="700" text-anchor="middle">2. Feature Engine</text>
+    <text x="204" y="72" fill="#1e293b" font-size="9.5" font-weight="600">24 Engineered Features:</text>
+    <text x="204" y="88" fill="#475569" font-size="8.8">• 5m/15m/1h Velocity</text>
+    <text x="204" y="102" fill="#475569" font-size="8.8">• 30d User &amp; Dept Z-Score</text>
+    <text x="204" y="116" fill="#475569" font-size="8.8">• Entropy &amp; JA3 Rarity</text>
+    <text x="204" y="130" fill="#475569" font-size="8.8">• Missingness Indicators</text>
+    <rect x="202" y="146" width="146" height="44" rx="5" fill="#e0f2fe" stroke="#0284c7"/>
+    <text x="275" y="164" fill="#0c4a6e" font-size="8.8" font-weight="700" text-anchor="middle">Leak-Free Redis Store</text>
+    <text x="275" y="179" fill="#0c4a6e" font-size="8.3" text-anchor="middle">Chronological Fit-Transform</text>
+
+    <line x1="356" y1="112" x2="380" y2="112" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arr)"/>
+
+    <!-- Stage 3 -->
+    <rect x="382" y="25" width="174" height="175" rx="8" fill="#f8fafc" stroke="#0f172a" stroke-width="1.6"/>
+    <rect x="382" y="25" width="174" height="28" rx="8" fill="#059669"/>
+    <text x="469" y="43" fill="#fff" font-size="11" font-weight="700" text-anchor="middle">3. Hybrid ML / DL</text>
+    <rect x="392" y="63" width="154" height="36" rx="5" fill="#ecfdf5" stroke="#059669"/>
+    <text x="469" y="79" fill="#065f46" font-size="8.8" font-weight="700" text-anchor="middle">Adversarial XGBoost</text>
+    <text x="469" y="92" fill="#065f46" font-size="8.1" text-anchor="middle">Monotonic + Multi-Threat T1–T5</text>
+    <rect x="392" y="106" width="154" height="36" rx="5" fill="#fffbeb" stroke="#d97706"/>
+    <text x="469" y="122" fill="#92400e" font-size="8.8" font-weight="700" text-anchor="middle">PyTorch Autoencoder</text>
+    <text x="469" y="135" fill="#92400e" font-size="8.1" text-anchor="middle">Unsupervised Zero-Day MSE</text>
+    <rect x="392" y="150" width="154" height="40" rx="5" fill="#eff6ff" stroke="#1d4ed8"/>
+    <text x="469" y="167" fill="#1e3a8a" font-size="8.8" font-weight="700" text-anchor="middle">Platt Calibrated Fusion</text>
+    <text x="469" y="180" fill="#1e3a8a" font-size="8.1" text-anchor="middle">Risk Score [0–100] + Asset Wt</text>
+
+    <line x1="556" y1="112" x2="580" y2="112" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arr)"/>
+
+    <!-- Stage 4 -->
+    <rect x="582" y="25" width="156" height="175" rx="8" fill="#f8fafc" stroke="#0f172a" stroke-width="1.6"/>
+    <rect x="582" y="25" width="156" height="28" rx="8" fill="#7c3aed"/>
+    <text x="660" y="43" fill="#fff" font-size="11" font-weight="700" text-anchor="middle">4. Alerting &amp; XAI</text>
+    <text x="592" y="72" fill="#1e293b" font-size="9.5" font-weight="600">Exact TreeSHAP:</text>
+    <text x="592" y="88" fill="#475569" font-size="8.8">• Per-Event Contributions</text>
+    <text x="592" y="102" fill="#475569" font-size="8.8">• AE Feature Error Map</text>
+    <text x="592" y="116" fill="#475569" font-size="8.8">• Incident Graph Grouping</text>
+    <rect x="590" y="140" width="140" height="50" rx="5" fill="#f5f3ff" stroke="#7c3aed"/>
+    <text x="660" y="159" fill="#5b21b6" font-size="8.8" font-weight="700" text-anchor="middle">Stakeholder Translator</text>
+    <text x="660" y="174" fill="#5b21b6" font-size="8.1" text-anchor="middle">Plain-English Risk Drivers</text>
+    <text x="660" y="185" fill="#5b21b6" font-size="8.1" text-anchor="middle">&amp; Business Impact Brief</text>
+
+    <line x1="738" y1="112" x2="762" y2="112" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arr)"/>
+
+    <!-- Stage 5 -->
+    <rect x="764" y="25" width="148" height="175" rx="8" fill="#f8fafc" stroke="#0f172a" stroke-width="1.6"/>
+    <rect x="764" y="25" width="148" height="28" rx="8" fill="#dc2626"/>
+    <text x="838" y="43" fill="#fff" font-size="11" font-weight="700" text-anchor="middle">5. Gated SOAR</text>
+    <text x="774" y="70" fill="#475569" font-size="8.6">&lt;40: Cold Log Only</text>
+    <text x="774" y="86" fill="#92400e" font-size="8.6">40–69: Push MFA Verify</text>
+    <text x="774" y="102" fill="#9a3412" font-size="8.6">70–84: FIDO2 + Rate-Limit</text>
+    <text x="774" y="118" fill="#991b1b" font-size="8.6" font-weight="700">&ge;85: Revoke Okta/STS/EDR</text>
+    <rect x="772" y="140" width="132" height="50" rx="5" fill="#fef2f2" stroke="#dc2626"/>
+    <text x="838" y="159" fill="#991b1b" font-size="8.8" font-weight="700" text-anchor="middle">Circuit Breaker</text>
+    <text x="838" y="174" fill="#991b1b" font-size="8.1" text-anchor="middle">Max 5 Isolations / 10 min</text>
+    <text x="838" y="185" fill="#991b1b" font-size="8.1" text-anchor="middle">Human Gate on Bulk Hold</text>
+  </svg>
+  <div class="figure-cap">
+    <strong>Figure 1.</strong> End-to-end SentinelMesh AI architecture from privacy-masked telemetry ingestion to confidence-gated SOAR containment.
+  </div>
+</div>
+
+<h3>3.1 Feature Engineering Specification (24 Engineered Features)</h3>
+<p>
+  Raw log lines cannot separate legitimate developer bursts from LotL intrusions. SentinelMesh AI engineers <strong>24 features</strong> across five behavioral families. Critically, all imputation medians and UEBA entity/department baselines are fitted <strong>strictly on the chronological training split</strong> (Days 0–35) prior to transforming validation (Days 36–47) and test (Days 48–59) windows, preventing temporal data leakage.
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Feature Family</th>
+      <th>Engineered Features</th>
+      <th>Security Rationale (Why It Separates Benign vs. Threat)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Identity &amp; Auth Velocity</strong></td>
+      <td><code>auth_failures_5m</code>, <code>mfa_push_count_5m</code>, <code>geo_velocity_kmph</code>, <code>new_asn_flag</code>, <code>new_device_flag</code>, <code>ja3_rarity_score</code>, <code>off_hours_score</code></td>
+      <td>Detects brute-force/MFA fatigue bursts, physically impossible login travel, and AiTM reverse-proxy TLS fingerprints (<code>ja3_rarity_score</code> is top global SHAP feature at 1.593 mean |SHAP|).</td>
+    </tr>
+    <tr>
+      <td><strong>Endpoint &amp; Lateral</strong></td>
+      <td><code>process_lineage_rarity</code>, <code>admin_cli_burst_15m</code>, <code>internal_port_fanout_15m</code>, <code>file_rename_entropy</code></td>
+      <td>Captures abnormal parent-child chains (e.g., Word spawning PowerShell), east-west port scanning, and high-entropy file renaming preceding ransomware encryption.</td>
+    </tr>
+    <tr>
+      <td><strong>Network &amp; Exfil</strong></td>
+      <td><code>bytes_out_mb_1h</code>, <code>egress_ingress_ratio</code>, <code>dest_domain_entropy</code>, <code>beacon_periodicity_score</code>, <code>nxdomain_ratio_1h</code></td>
+      <td>Normalizes outbound traffic against inbound flow (separating streaming downloads from data exfiltration), detects DGA domains via Shannon entropy, and exposes periodic C2 callbacks despite TLS.</td>
+    </tr>
+    <tr>
+      <td><strong>Cloud IAM Plane</strong></td>
+      <td><code>cloud_iam_sensitive_calls_15m</code>, <code>cross_account_hops</code></td>
+      <td>Flags rapid <code>PassRole</code>/<code>CreateAccessKey</code> bursts and unusual multi-account role chaining invisible to network firewalls.</td>
+    </tr>
+    <tr>
+      <td><strong>UEBA Baselines &amp; Missingness</strong></td>
+      <td><code>user_bytes_out_zscore</code>, <code>dept_admin_burst_zscore</code>, <code>asset_criticality</code>, <code>identity_risk_compound</code>, <code>geo_velocity_missing_flag</code>, <code>bytes_out_missing_flag</code></td>
+      <td>Contextualizes spikes against each user's 30-day norm and department peers (so normal DevOps CLI bursts don't alert like Finance CLI bursts). Explicit missingness indicators capture VPN/telemetry suppression (~3.04% geo, ~2.13% bytes).</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>3.2 ML/DL Detection Models &amp; Calibration</h3>
+<p>
+  SentinelMesh AI fuses a supervised <strong>XGBoost</strong> detector (plus multi-class T1–T5 attribution) with an unsupervised <strong>PyTorch Deep Autoencoder</strong> (<code>Input(24) → 16 → 8 → 16 → 24</code>, trained strictly on benign traffic with L2 weight decay). Reconstruction Mean Squared Error (MSE) is sigmoid-normalized relative to the 99th percentile of benign training error and combined with XGBoost probability via a Platt-calibrated logistic meta-learner on the validation set.
+</p>
+
+<div class="figure-box">
+  <img src="../outputs/figures/fig1_model_roc_pr.png" alt="ROC and PR curves" />
+  <div class="figure-cap">
+    <strong>Figure 2.</strong> ROC and Precision-Recall curves across baselines and SentinelMesh Hybrid Fusion on the held-out chronological test split (Days 48–59, n = 3,490 events).
+  </div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Model</th>
+      <th>PR-AUC (95% Bootstrap CI)</th>
+      <th>ROC-AUC</th>
+      <th>F1-Score</th>
+      <th>Precision</th>
+      <th>Recall</th>
+      <th>FPR</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Logistic Regression (Baseline)</td>
+      <td>0.8344 [0.7852, 0.8806]</td>
+      <td>0.9885</td>
+      <td>0.7663</td>
+      <td>0.6346</td>
+      <td>0.9670</td>
+      <td>0.0472</td>
+    </tr>
+    <tr>
+      <td>PyTorch Autoencoder (Unsupervised)</td>
+      <td>0.8202 [0.7746, 0.8794]</td>
+      <td>0.9846</td>
+      <td>0.8226</td>
+      <td>0.7515</td>
+      <td>0.9084</td>
+      <td>0.0255</td>
+    </tr>
+    <tr>
+      <td>LightGBM</td>
+      <td>0.9704 [0.9581, 0.9815]</td>
+      <td>0.9970</td>
+      <td>0.8683</td>
+      <td>0.7807</td>
+      <td>0.9780</td>
+      <td>0.0233</td>
+    </tr>
+    <tr>
+      <td>Random Forest</td>
+      <td>0.9747 [0.9631, 0.9843]</td>
+      <td>0.9977</td>
+      <td>0.8687</td>
+      <td>0.7791</td>
+      <td>0.9817</td>
+      <td>0.0236</td>
+    </tr>
+    <tr>
+      <td>XGBoost (Supervised)</td>
+      <td><strong>0.9753</strong> [0.9634, 0.9846]</td>
+      <td>0.9974</td>
+      <td>0.8645</td>
+      <td>0.7723</td>
+      <td>0.9817</td>
+      <td>0.0246</td>
+    </tr>
+    <tr>
+      <td><strong>SentinelMesh Hybrid Fusion</strong></td>
+      <td>0.9533 [0.9355, 0.9692]</td>
+      <td>0.9949</td>
+      <td>0.8659</td>
+      <td><strong>0.8070</strong></td>
+      <td>0.9341</td>
+      <td><strong>0.0190</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="figure-box">
+  <img src="../outputs/figures/fig2_threat_confusion_matrix.png" alt="Multi-threat confusion matrix" style="max-width:66%;" />
+  <div class="figure-cap">
+    <strong>Figure 3.</strong> Multi-threat attribution confusion matrix across Benign and T1–T5 threats (attribution recall: T1_ATO 98.77%, T2_LOTL_RANSOM 100.0%, T3_EXFIL 94.92%, T4_CLOUD_PRIVESC 100.0%, T5_C2_BEACON 100.0%).
+  </div>
+</div>
+
+
+<h2>4. Adversarial ML Threat Analysis &amp; Mitigation</h2>
+<p>
+  Adversaries actively target ML-based security controls. In Meridian FinTech's deployment, three adversarial attack classes threaten SentinelMesh AI:
+</p>
+<ul>
+  <li><strong>Test-Time Evasion (Primary Threat):</strong> Attackers throttle noisy volume/timing features while preserving malicious execution—for example, splitting data exfiltration into slow-drip hourly chunks (-50% bytes out), injecting random jitter into C2 beacons (-0.34 periodicity), blending activity into business hours (-65% off-hours score), and routing through compromised residential proxies (masking <code>new_asn_flag</code>).</li>
+  <li><strong>Baseline Data Poisoning ("Boiling the Frog"):</strong> An insider or patient attacker gradually inflates daily outbound transfers over 2–3 weeks to skew the 30-day <code>user_bytes_out_zscore</code> baseline upward before staging large exfiltration.</li>
+  <li><strong>Model Probing / Threshold Inference:</strong> Attackers send benign-adjacent probes to map automated SOAR triggers and stay just below the 70/85 risk thresholds.</li>
+</ul>
+
+<div class="callout good">
+  <strong>Implemented Mitigation Strategy — Adversarial Training + Monotonic Invariant Constraints + Autoencoder Disagreement Guard:</strong><br/>
+  (1) <strong>Adversarial Augmentation:</strong> Malicious training samples are augmented with multi-strength constrained evasion perturbations (60% and 100% stealth throttling) that preserve attack functionality.<br/>
+  (2) <strong>Monotonic Feature Constraints:</strong> XGBoost enforces <code>monotone_constraints=+1</code> across 20 risk-increasing telemetry features so attackers cannot exploit tree-split artifacts to reduce risk by inflating correlated counts.<br/>
+  (3) <strong>Autoencoder Disagreement &amp; Baseline Freeze:</strong> The PyTorch Autoencoder (trained strictly on clean benign manifolds) acts as an independent out-of-distribution guard, while UEBA 30-day baselines exclude any session with Risk &ge; 40 to defeat slow poisoning.
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Model &amp; Evaluation Condition</th>
+      <th>PR-AUC</th>
+      <th>ROC-AUC</th>
+      <th>Detection Recall (TPR)</th>
+      <th>False Positive Rate</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Baseline XGBoost (Clean Test)</td>
+      <td>0.9753</td>
+      <td>0.9974</td>
+      <td>98.17%</td>
+      <td>2.46%</td>
+    </tr>
+    <tr>
+      <td><strong>Baseline XGBoost (Under Evasion Attack)</strong></td>
+      <td><strong>0.6890</strong></td>
+      <td>0.9727</td>
+      <td><strong style="color:#dc2626;">60.44% (-37.7 pts)</strong></td>
+      <td>2.46%</td>
+    </tr>
+    <tr>
+      <td>Hardened Hybrid (Clean Test)</td>
+      <td>0.9540</td>
+      <td>0.9966</td>
+      <td>96.70%</td>
+      <td><strong>1.87%</strong></td>
+    </tr>
+    <tr>
+      <td><strong>Hardened Hybrid (Under Evasion Attack)</strong></td>
+      <td><strong>0.9385</strong></td>
+      <td>0.9962</td>
+      <td><strong style="color:#059669;">97.44% (+37.0 pts recovery)</strong></td>
+      <td><strong>1.87%</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>5. Explainable AI (XAI) for Non-Technical Stakeholders</h2>
+<p>
+  When SentinelMesh AI triggers a containment action affecting an employee or customer-facing workflow, non-technical stakeholders (VP of Engineering, Chief Compliance Officer, Legal) require transparent answers without ML jargon such as "log-odds margins" or "MSE reconstruction loss." SentinelMesh computes exact <strong>TreeSHAP</strong> contributions (<code>pred_contribs=True</code>, verified mathematically to satisfy &Sigma;&phi;<sub>i</sub> + &phi;<sub>0</sub> = raw logit margin) and translates positive risk drivers into a structured plain-English briefing.
+</p>
+
+<div class="figure-box">
+  <img src="../outputs/figures/fig3_xai_shap_drivers.png" alt="Global and Local TreeSHAP" />
+  <div class="figure-cap">
+    <strong>Figure 4.</strong> Left: Top-10 global features ranked by mean |TreeSHAP|. Right: Exact local risk-driver percentages generated for Incident <code>INC-2026-0418</code>.
+  </div>
+</div>
+
+<div class="stakeholder-card">
+  <div class="sc-head">
+    <span>INCIDENT BRIEF: INC-2026-0418 · HIGH SOFT CONTAINMENT</span>
+    <span>Risk Score: 85.0 / 100 (Very High Confidence)</span>
+  </div>
+  <div class="sc-body">
+    <p><strong>Plain-English Summary:</strong> SentinelMesh AI flagged unusual activity associated with pseudonymized employee account <code>usr_1f6dbd33051bfbbc</code> in the <strong>Engineering</strong> department. Compared to this employee's 30-day normal baseline and department peers (unsupervised anomaly score: <strong>99%</strong>), the system detected a strong pattern matching <strong>Credential Stuffing / AiTM Phishing &amp; Account Takeover</strong> (MITRE T1078, T1110, T1557).</p>
+    <div class="sc-grid">
+      <div>
+        <strong>Why the AI Flagged This (Top Risk Drivers):</strong>
+        <ul>
+          <li><strong>40.2%</strong> — Impossible travel speed between consecutive logins (<code>1,236.7 km/h</code>)</li>
+          <li><strong>22.3%</strong> — Unusual encrypted browser/client TLS fingerprint</li>
+          <li><strong>14.1%</strong> — Combined unusual network + unrecognized device + off-hours login</li>
+          <li><strong>9.2%</strong> — Activity occurring outside the employee's normal working hours</li>
+        </ul>
+      </div>
+      <div>
+        <strong>Automated Action Taken &amp; Risk Mitigated:</strong>
+        <ul>
+          <li>Enforced step-up FIDO2 hardware MFA challenge</li>
+          <li>Applied temporary IAM read-only &amp; egress rate-limit</li>
+          <li>Escalated to Tier-2 SOC (15-minute SLA)</li>
+        </ul>
+        <p style="margin-top:6px;"><strong>Business Risk Mitigated:</strong> Prevented unauthorized takeover of an Engineering account protecting corporate SSO and internal payment workflows.</p>
+      </div>
+    </div>
+    <p style="margin-top:8px;padding-top:8px;border-top:1px solid #e2e8f0;"><strong>Stakeholder Decision Needed:</strong> Please confirm with the employee's manager whether urgent business travel or approved maintenance is underway; Security Operations can restore full access within 2 minutes once verified.</p>
+  </div>
+</div>
+
+
+<h2>6. Ethical, Privacy &amp; Regulatory Considerations</h2>
+<div class="callout warn">
+  <strong>Primary Ethical &amp; Privacy Concern — Continuous Employee Behavioral Surveillance, Function Creep &amp; Disparate False-Positive Harm:</strong><br/>
+  Deploying a 24/7 behavioral ML system that scores employee login times, travel velocity, command bursts, and network volumes creates granular workplace surveillance risks, potential <strong>function creep</strong> (repurposing security telemetry for HR productivity scoring), and <strong>disparate false-positive impact</strong> on specific employee groups (on-call engineers, security analysts, and frequent travelers).
+</div>
+
+<p>
+  Our empirical <strong>Department Slice Audit</strong> (Figure 5, right) proves this fairness risk directly: while overall Hybrid Fusion FPR is 1.90%, <strong>Engineering (2.61% FPR)</strong> and <strong>Security_IT (2.70% FPR)</strong> experience <strong>3.7&times; higher false-positive rates</strong> than <strong>Operations (0.71% FPR)</strong> due to legitimate off-hours on-call deployments and administrative scripting. Left unchecked, disproportionate soft-containment challenges could unfairly burden on-call engineers or trigger wrongful disciplinary scrutiny.
+</p>
+
+<div class="figure-box">
+  <img src="../outputs/figures/fig4_adversarial_and_fairness.png" alt="Adversarial recovery and department fairness slice audit" />
+  <div class="figure-cap">
+    <strong>Figure 5.</strong> Left: Baseline XGBoost recall collapse (98.2% &rarr; 60.4%) under evasion vs. Hardened Hybrid recovery (97.4%). Right: Empirical slice audit showing elevated FPR in Engineering and Security_IT.
+  </div>
+</div>
+
+<h3>Concrete Privacy-by-Design &amp; Ethical Safeguards</h3>
+<ul>
+  <li><strong>Purpose Limitation &amp; Organizational Separation:</strong> Telemetry is contractually and technically restricted to cybersecurity defense; HR and management dashboards are strictly blocked from viewing raw behavioral scores or <code>off_hours_score</code> logs.</li>
+  <li><strong>HMAC-SHA256 Pseudonymization &amp; Dual-Custody Re-Identification:</strong> Raw user IDs are masked at Kafka ingestion (<code>usr_1f6dbd33051bfbbc</code>). Unmasking requires dual-custody cryptographic approval from both the CISO and Legal Counsel on confirmed High/Critical incidents.</li>
+  <li><strong>Metadata-Only Minimization &amp; Strict TTLs:</strong> Zero email bodies, keystrokes, or screen captures are ingested; hot features expire in 7 days and cold Parquet logs purge at 90 days (GDPR Art. 5).</li>
+  <li><strong>Human-in-the-Loop Contestability (GDPR Art. 22) &amp; Role-Calibrated Thresholds:</strong> Automated actions are strictly reversible, employees receive transparent out-of-band verification prompts with a 2-minute restoration SLA, and quarterly slice audits calibrate department-specific baselines for on-call and travel-eligible roles.</li>
+</ul>
+
+<h2>7. Prototype Verification &amp; 12-Week Rollout Roadmap</h2>
+<p>
+  All architectural components—chronological data simulation, leak-free UEBA featurization, XGBoost + PyTorch Autoencoder fusion, exact TreeSHAP stakeholder translation, constrained adversarial evasion/hardening, and SOAR circuit breakers—are implemented and verified in the accompanying GitHub repository (<code>pytest</code> 4/4 tests passing; batch scoring latency <strong>4.37 ms per 1,000 events</strong>).
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Phase &amp; Timeline</th>
+      <th>Key Deliverables</th>
+      <th>Exit Criteria</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Phase 1: Shadow Ingestion</strong><br/>Weeks 1–4</td>
+      <td>Deploy Vector/Kafka collectors, HMAC-SHA256 masking, and Redis feature store in shadow mode (read-only).</td>
+      <td>&lt;0.5% event drop at 7,800 EPS peak; zero plaintext PII in ML store.</td>
+    </tr>
+    <tr>
+      <td><strong>Phase 2: Silent Scoring &amp; XAI</strong><br/>Weeks 5–8</td>
+      <td>Run Hardened Hybrid Fusion in shadow mode; validate TreeSHAP stakeholder cards with SOC &amp; Compliance leads.</td>
+      <td>FPR &lt; 2.0% across all 5 departments; MTTD &lt; 60s on red-team purple exercises.</td>
+    </tr>
+    <tr>
+      <td><strong>Phase 3: Gated SOAR Cutover</strong><br/>Weeks 9–12</td>
+      <td>Enable Tier-2 soft containment (Score &ge; 70), then automated reversible containment (Score &ge; 85) with circuit breaker.</td>
+      <td>100% pass on circuit-breaker chaos test; quarterly fairness &amp; drift monitoring active.</td>
+    </tr>
+  </tbody>
+</table>
+
+</body>
+</html>

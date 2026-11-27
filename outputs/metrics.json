@@ -1,0 +1,290 @@
+{
+  "enterprise_profile": {
+    "name": "Meridian FinTech Inc.",
+    "employees": 500,
+    "endpoints": 650,
+    "departments": [
+      "Engineering",
+      "Finance",
+      "Sales_CS",
+      "Operations",
+      "Security_IT"
+    ],
+    "department_weights": [
+      0.46,
+      0.14,
+      0.2,
+      0.14,
+      0.06
+    ],
+    "cloud_stack": [
+      "AWS EKS & IAM",
+      "GCP BigQuery",
+      "Okta SSO",
+      "Microsoft 365",
+      "GitHub Enterprise"
+    ],
+    "daily_log_volume_gb": 6.4,
+    "avg_events_per_sec": 1850,
+    "peak_events_per_sec": 7800
+  },
+  "dataset_summary": {
+    "total_events": 18000,
+    "train_events": 10825,
+    "val_events": 3685,
+    "test_events": 3490,
+    "attack_rate_pct": 7.99,
+    "n_engineered_features": 24,
+    "missingness": {
+      "geo_velocity_missing_pct": 3.04,
+      "bytes_out_missing_pct": 2.13
+    }
+  },
+  "model_comparison": [
+    {
+      "model": "Logistic Regression (Baseline)",
+      "pr_auc": 0.8344,
+      "pr_auc_ci95": [
+        0.7852,
+        0.8806
+      ],
+      "roc_auc": 0.9885,
+      "f1": 0.7663,
+      "precision": 0.6346,
+      "recall": 0.967,
+      "fpr": 0.0472
+    },
+    {
+      "model": "Random Forest",
+      "pr_auc": 0.9747,
+      "pr_auc_ci95": [
+        0.9631,
+        0.9843
+      ],
+      "roc_auc": 0.9977,
+      "f1": 0.8687,
+      "precision": 0.7791,
+      "recall": 0.9817,
+      "fpr": 0.0236
+    },
+    {
+      "model": "LightGBM",
+      "pr_auc": 0.9704,
+      "pr_auc_ci95": [
+        0.9581,
+        0.9815
+      ],
+      "roc_auc": 0.997,
+      "f1": 0.8683,
+      "precision": 0.7807,
+      "recall": 0.978,
+      "fpr": 0.0233
+    },
+    {
+      "model": "PyTorch Autoencoder (Unsupervised)",
+      "pr_auc": 0.8202,
+      "pr_auc_ci95": [
+        0.7746,
+        0.8794
+      ],
+      "roc_auc": 0.9846,
+      "f1": 0.8226,
+      "precision": 0.7515,
+      "recall": 0.9084,
+      "fpr": 0.0255
+    },
+    {
+      "model": "XGBoost",
+      "pr_auc": 0.9753,
+      "pr_auc_ci95": [
+        0.9634,
+        0.9846
+      ],
+      "roc_auc": 0.9974,
+      "f1": 0.8645,
+      "precision": 0.7723,
+      "recall": 0.9817,
+      "fpr": 0.0246
+    },
+    {
+      "model": "SentinelMesh Hybrid Fusion",
+      "pr_auc": 0.9533,
+      "pr_auc_ci95": [
+        0.9355,
+        0.9692
+      ],
+      "roc_auc": 0.9949,
+      "f1": 0.8659,
+      "precision": 0.807,
+      "recall": 0.9341,
+      "fpr": 0.019
+    }
+  ],
+  "per_threat_attribution_recall": {
+    "BENIGN": 0.9779,
+    "T1_ATO": 0.9877,
+    "T2_LOTL_RANSOM": 1.0,
+    "T3_EXFIL": 0.9492,
+    "T4_CLOUD_PRIVESC": 1.0,
+    "T5_C2_BEACON": 1.0
+  },
+  "inference_latency_ms_per_1k_events": 1.51,
+  "department_slice_audit": [
+    {
+      "department": "Engineering",
+      "n_events": 1599,
+      "fpr": 0.0261,
+      "recall": 0.9429
+    },
+    {
+      "department": "Finance",
+      "n_events": 508,
+      "fpr": 0.0151,
+      "recall": 0.9091
+    },
+    {
+      "department": "Sales_CS",
+      "n_events": 754,
+      "fpr": 0.0117,
+      "recall": 0.9412
+    },
+    {
+      "department": "Operations",
+      "n_events": 464,
+      "fpr": 0.0071,
+      "recall": 0.9487
+    },
+    {
+      "department": "Security_IT",
+      "n_events": 165,
+      "fpr": 0.027,
+      "recall": 0.8824
+    }
+  ],
+  "adversarial_robustness": {
+    "baseline_xgb_clean": {
+      "pr_auc": 0.9753,
+      "roc_auc": 0.9974,
+      "recall_tpr": 0.9817,
+      "fpr": 0.0246
+    },
+    "baseline_xgb_under_evasion": {
+      "pr_auc": 0.689,
+      "roc_auc": 0.9727,
+      "recall_tpr": 0.6044,
+      "fpr": 0.0246
+    },
+    "hardened_hybrid_clean": {
+      "pr_auc": 0.954,
+      "roc_auc": 0.9966,
+      "recall_tpr": 0.967,
+      "fpr": 0.0187
+    },
+    "hardened_hybrid_under_evasion": {
+      "pr_auc": 0.9385,
+      "roc_auc": 0.9962,
+      "recall_tpr": 0.9744,
+      "fpr": 0.0187
+    }
+  },
+  "top_10_global_shap": [
+    {
+      "feature": "ja3_rarity_score",
+      "business_label": "Unusual encrypted browser/client TLS fingerprint",
+      "mean_abs_shap": 1.593252182006836
+    },
+    {
+      "feature": "dest_domain_entropy",
+      "business_label": "Data sent to an algorithmically generated / suspicious domain",
+      "mean_abs_shap": 0.9999486207962036
+    },
+    {
+      "feature": "egress_ingress_ratio",
+      "business_label": "Disproportionately high outbound vs. inbound data ratio",
+      "mean_abs_shap": 0.9808427691459656
+    },
+    {
+      "feature": "geo_velocity_kmph",
+      "business_label": "Impossible travel speed between consecutive logins",
+      "mean_abs_shap": 0.5676460862159729
+    },
+    {
+      "feature": "off_hours_score",
+      "business_label": "Activity occurring outside the employee's normal working hours",
+      "mean_abs_shap": 0.5313041806221008
+    },
+    {
+      "feature": "cloud_iam_sensitive_calls_15m",
+      "business_label": "Spike in sensitive cloud permission/role changes",
+      "mean_abs_shap": 0.5013208389282227
+    },
+    {
+      "feature": "user_bytes_out_zscore",
+      "business_label": "Outbound transfer far above this employee's 30-day norm",
+      "mean_abs_shap": 0.45852622389793396
+    },
+    {
+      "feature": "identity_risk_compound",
+      "business_label": "Combined unusual network + unrecognized device + off-hours login",
+      "mean_abs_shap": 0.4532579183578491
+    },
+    {
+      "feature": "file_rename_entropy",
+      "business_label": "High-rate encrypted/randomized file renaming (ransomware sign)",
+      "mean_abs_shap": 0.40115436911582947
+    },
+    {
+      "feature": "process_lineage_rarity",
+      "business_label": "Unusual parent-to-child system command execution chain",
+      "mean_abs_shap": 0.3972631096839905
+    }
+  ],
+  "stakeholder_xai_demo": {
+    "incident_id": "INC-2026-0418",
+    "department": "Engineering",
+    "pseudonymized_user": "usr_1f6dbd33051bfbbc",
+    "threat_category": "Credential Stuffing / AiTM Phishing & Account Takeover",
+    "mitre_techniques": "T1078, T1110, T1557",
+    "risk_score": 85.0,
+    "confidence_label": "Very High Confidence",
+    "headline": "[HIGH SOFT CONTAINMENT] Credential Stuffing / AiTM Phishing & Account Takeover in Engineering (Risk Score: 85.0/100)",
+    "executive_summary": "SentinelMesh AI flagged unusual activity associated with pseudonymized employee account usr_1f6dbd33051bfbbc in the Engineering department. Compared to this employee's 30-day normal baseline and department peers (anomaly score 99%), the system detected a strong pattern matching Credential Stuffing / AiTM Phishing & Account Takeover. Primary drivers: impossible travel speed between consecutive logins (40.2% of risk); unusual encrypted browser/client tls fingerprint (22.3% of risk).",
+    "top_drivers": [
+      {
+        "feature_name": "geo_velocity_kmph",
+        "business_label": "Impossible travel speed between consecutive logins",
+        "observed_value": 1236.67,
+        "shap_contribution": 4.5325,
+        "relative_impact_pct": 40.2
+      },
+      {
+        "feature_name": "ja3_rarity_score",
+        "business_label": "Unusual encrypted browser/client TLS fingerprint",
+        "observed_value": 0.562,
+        "shap_contribution": 2.5111,
+        "relative_impact_pct": 22.3
+      },
+      {
+        "feature_name": "identity_risk_compound",
+        "business_label": "Combined unusual network + unrecognized device + off-hours login",
+        "observed_value": 1.328,
+        "shap_contribution": 1.5844,
+        "relative_impact_pct": 14.1
+      },
+      {
+        "feature_name": "off_hours_score",
+        "business_label": "Activity occurring outside the employee's normal working hours",
+        "observed_value": 0.794,
+        "shap_contribution": 1.0413,
+        "relative_impact_pct": 9.2
+      }
+    ],
+    "automated_actions_taken": [
+      "Enforce step-up FIDO2 MFA challenge",
+      "Apply temporary IAM read-only / egress rate-limit",
+      "Escalate to Tier-2 SOC (15-min SLA)"
+    ],
+    "business_risk_mitigated": "Prevented unauthorized takeover of a Engineering employee account, protecting corporate SSO, customer financial dashboards, and internal payment workflows.",
+    "stakeholder_action_needed": "Please confirm with the employee's manager whether legitimate urgent business travel or approved maintenance is underway; Security Operations has temporarily isolated access and can restore it within 2 minutes once verified."
+  }
+}
