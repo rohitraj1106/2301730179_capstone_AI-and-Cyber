@@ -1,4 +1,4 @@
-"""Build publication-grade PDF report from HTML using Playwright (Edge/Chrome) or Edge CLI."""
+"""Build KRMU-formatted academic Capstone PDF report from HTML using Playwright (Edge/Chrome) or Edge CLI."""
 
 from __future__ import annotations
 
@@ -7,11 +7,10 @@ from pathlib import Path
 
 
 def html_to_pdf(html_path: Path, pdf_path: Path) -> None:
-    """Render an HTML document to a styled, paginated PDF."""
+    """Render an HTML document to an A4 academic PDF using CSS @page margin rules."""
     html_uri = html_path.resolve().as_uri()
     pdf_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # Prefer Playwright with installed Microsoft Edge or Chrome channel (no extra browser download needed)
     try:
         from playwright.sync_api import sync_playwright
 
@@ -33,29 +32,13 @@ def html_to_pdf(html_path: Path, pdf_path: Path) -> None:
                     path=str(pdf_path),
                     format="A4",
                     print_background=True,
-                    display_header_footer=True,
-                    header_template=(
-                        '<div style="font-size:8px;color:#64748b;width:100%;padding:0 18mm;'
-                        'display:flex;justify-content:space-between;font-family:Segoe UI,Arial,sans-serif;">'
-                        '<span>SentinelMesh AI — Enterprise Threat Detection &amp; Prevention Design Report</span>'
-                        '<span>Meridian FinTech Inc. (Confidential Capstone)</span>'
-                        '</div>'
-                    ),
-                    footer_template=(
-                        '<div style="font-size:8px;color:#64748b;width:100%;padding:0 18mm;'
-                        'display:flex;justify-content:space-between;font-family:Segoe UI,Arial,sans-serif;">'
-                        '<span>Rohit Raj (2301730179) · 2301730179@krmu.edu.in · Capstone (120 Marks)</span>'
-                        '<span>Page <span class="pageNumber"></span> of <span class="totalPages"></span></span>'
-                        '</div>'
-                    ),
-                    margin={"top": "20mm", "bottom": "18mm", "left": "16mm", "right": "16mm"},
+                    prefer_css_page_size=True,
                 )
                 browser.close()
                 return
     except Exception as exc:
         print(f"Playwright PDF fallback triggered: {exc}")
 
-    # Fallback: Microsoft Edge headless CLI
     edge_exe = Path(r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe")
     if not edge_exe.exists():
         edge_exe = Path(r"C:\Program Files\Google\Chrome\Application\chrome.exe")
@@ -75,7 +58,13 @@ def html_to_pdf(html_path: Path, pdf_path: Path) -> None:
 if __name__ == "__main__":
     root = Path(__file__).resolve().parents[1]
     html_file = root / "reports" / "SentinelMesh_AI_Capstone_Report.html"
-    pdf_file = root / "reports" / "SentinelMesh_AI_Capstone_Report.pdf"
-    html_to_pdf(html_file, pdf_file)
-    size_mb = pdf_file.stat().st_size / (1024 * 1024)
-    print(f"Generated PDF: {pdf_file} ({size_mb:.2f} MB)")
+    target_pdf = root / "reports" / "SentinelMesh_AI_Capstone_Report_Rohit_Raj_2301730179.pdf"
+    html_to_pdf(html_file, target_pdf)
+    # Best-effort sync to generic filename if not locked by an external PDF viewer
+    generic_pdf = root / "reports" / "SentinelMesh_AI_Capstone_Report.pdf"
+    try:
+        generic_pdf.write_bytes(target_pdf.read_bytes())
+    except PermissionError:
+        pass
+    size_mb = target_pdf.stat().st_size / (1024 * 1024)
+    print(f"Generated PDF: {target_pdf} ({size_mb:.2f} MB)")
