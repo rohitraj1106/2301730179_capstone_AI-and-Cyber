@@ -8,14 +8,14 @@
 
 ## Deliverables in This Repository
 - **Design Report (Final Submission PDF):** [`reports/SentinelMesh_Capstone_Design_Report_Rohit_Raj_2301730179.pdf`](reports/SentinelMesh_Capstone_Design_Report_Rohit_Raj_2301730179.pdf)
-- **Design Report (HTML & Markdown Sources):** [`reports/SentinelMesh_Capstone_Design_Report.html`](reports/SentinelMesh_Capstone_Design_Report.html) · [`reports/SentinelMesh_AI_Capstone_Report.md`](reports/SentinelMesh_AI_Capstone_Report.md)
+- **Design Report (HTML Source):** [`reports/SentinelMesh_Capstone_Design_Report.html`](reports/SentinelMesh_Capstone_Design_Report.html)
 - **Working ML / XAI / Adversarial / SOAR Prototype:** [`src/sentinelmesh/`](src/sentinelmesh/)
-- **Benchmark Outputs & Publication Charts:** [`outputs/metrics.json`](outputs/metrics.json) and [`outputs/figures/`](outputs/figures/)
+- **Benchmark Outputs & Publication Charts:** [`outputs/metrics.json`](outputs/metrics.json) and [`outputs/figures_academic/`](outputs/figures_academic/)
 
 ## Key Capabilities
 1. **Top-5 Threat Model (`MITRE ATT&CK`):** Account Takeover (`T1078`/`T1557`), LotL & Pre-Ransomware (`T1059`/`T1486`), Stealthy Exfiltration (`T1041`/`T1567`), Cloud IAM Escalation (`T1098`/`T1548`), and Encrypted C2 Beaconing (`T1071`/`T1573`).
 2. **Leak-Free Feature Engineering:** 24 sliding-window, entropy, JA3 rarity, missingness-indicator, and 30-day per-user/per-department UEBA features fitted strictly on chronological training splits with `HMAC-SHA256` PII pseudonymization.
-3. **Hybrid ML/DL Engine:** Combines supervised **XGBoost** (binary + multi-threat attribution) with an unsupervised **PyTorch Deep Autoencoder** trained exclusively on benign telemetry and Platt-calibrated on validation data (`0.9533` PR-AUC, `1.90%` FPR, `4.37 ms` per 1,000 events).
+3. **Hybrid ML/DL Engine:** Combines supervised **XGBoost** (binary + multi-threat attribution) with an unsupervised **PyTorch Deep Autoencoder** trained exclusively on benign telemetry and Platt-calibrated on validation data (`0.9533` PR-AUC, `1.90%` FPR, `1.51 ms` per 1,000 events).
 4. **Adversarial Resilience:** Demonstrates constrained evasion recall collapse (`98.17% → 60.44%` on baseline XGBoost) and full recovery (`97.44%` under evasion) via **Adversarial Training + Monotonic Constraints + Autoencoder Disagreement Guard**.
 5. **Exact TreeSHAP Stakeholder XAI:** Uses XGBoost native `pred_contribs=True` to translate technical alerts into plain-English executive & compliance incident briefings.
 6. **Confidence-Gated SOAR with Circuit Breaker:** Automates reversible containment at `Risk >= 85` while capping bulk isolations per 10-minute window to prevent attacker-induced self-DoS.
@@ -34,14 +34,14 @@
 │   ├── soar.py            # Confidence-gated SOAR with blast-radius circuit breaker
 │   └── pipeline.py        # End-to-end benchmark, bootstrap CIs, slice audit, charts
 ├── scripts/
-│   ├── run_benchmark.py   # Runs full pipeline -> outputs/metrics.json & figures/
-│   └── build_report_pdf.py# Renders HTML design report -> PDF
+│   ├── run_benchmark.py             # Runs full pipeline -> outputs/metrics.json
+│   ├── generate_standalone_figures.py # Generates full-resolution academic figures
+│   └── build_report_pdf.py          # Renders HTML design report -> PDF
 ├── tests/
 │   └── test_sentinelmesh.py
 └── reports/
-    ├── SentinelMesh_AI_Capstone_Report.md
-    ├── SentinelMesh_AI_Capstone_Report.html
-    └── SentinelMesh_AI_Capstone_Report.pdf
+    ├── SentinelMesh_Capstone_Design_Report.html
+    └── SentinelMesh_Capstone_Design_Report_Rohit_Raj_2301730179.pdf
 ```
 
 ## Quickstart & Verification
@@ -52,8 +52,9 @@ pip install -r requirements.txt
 # 2. Run unit and integration tests
 pytest -v
 
-# 3. Run the full 60-day benchmark, adversarial test, XAI demo, and chart generation
+# 3. Run the full 60-day benchmark, adversarial test, XAI demo, and standalone figures
 python scripts/run_benchmark.py
+python scripts/generate_standalone_figures.py
 
 # 4. Rebuild the submission PDF report
 python scripts/build_report_pdf.py
@@ -66,7 +67,7 @@ python scripts/build_report_pdf.py
 | SentinelMesh Hybrid Fusion (Clean Test) | PR-AUC `0.9533` · ROC-AUC `0.9949` · **FPR `1.90%`** |
 | Baseline XGBoost Under Evasion | Recall drops `98.17% → 60.44%` (`-37.7 pts`) |
 | Hardened Hybrid Under Evasion | Recall recovers to **`97.44%`** (`1.87%` FPR) |
-| Inference Throughput Latency | `4.37 ms` per 1,000 events |
+| Inference Throughput Latency | `1.51 ms` per 1,000 events |
 
-![Model Comparison](outputs/figures/fig1_model_roc_pr.png)
-![Adversarial & Fairness](outputs/figures/fig4_adversarial_and_fairness.png)
+![Model Comparison](outputs/figures_academic/fig3_roc_pr_curves.png)
+![Adversarial Evasion Recovery](outputs/figures_academic/fig4_adversarial_recovery.png)
