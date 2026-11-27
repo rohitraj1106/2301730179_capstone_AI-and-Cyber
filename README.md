@@ -7,8 +7,8 @@
 **SentinelMesh AI** is a comprehensive AI-based Threat Detection, Explainable Alerting, and Adversarially Resilient SOAR prototype designed for a ~500-employee hybrid-cloud FinTech enterprise (**Meridian FinTech Inc.**).
 
 ## Deliverables in This Repository
-- **Design Report (PDF Submission):** [`reports/SentinelMesh_AI_Capstone_Report.pdf`](reports/SentinelMesh_AI_Capstone_Report.pdf)
-- **Design Report (Markdown Source):** [`reports/SentinelMesh_AI_Capstone_Report.md`](reports/SentinelMesh_AI_Capstone_Report.md)
+- **Design Report (Final Submission PDF):** [`reports/SentinelMesh_Capstone_Design_Report_Rohit_Raj_2301730179.pdf`](reports/SentinelMesh_Capstone_Design_Report_Rohit_Raj_2301730179.pdf)
+- **Design Report (HTML & Markdown Sources):** [`reports/SentinelMesh_Capstone_Design_Report.html`](reports/SentinelMesh_Capstone_Design_Report.html) · [`reports/SentinelMesh_AI_Capstone_Report.md`](reports/SentinelMesh_AI_Capstone_Report.md)
 - **Working ML / XAI / Adversarial / SOAR Prototype:** [`src/sentinelmesh/`](src/sentinelmesh/)
 - **Benchmark Outputs & Publication Charts:** [`outputs/metrics.json`](outputs/metrics.json) and [`outputs/figures/`](outputs/figures/)
 

@@ -57,14 +57,8 @@ def html_to_pdf(html_path: Path, pdf_path: Path) -> None:
 
 if __name__ == "__main__":
     root = Path(__file__).resolve().parents[1]
-    html_file = root / "reports" / "SentinelMesh_AI_Capstone_Report.html"
-    target_pdf = root / "reports" / "SentinelMesh_AI_Capstone_Report_Rohit_Raj_2301730179.pdf"
+    html_file = root / "reports" / "SentinelMesh_Capstone_Design_Report.html"
+    target_pdf = root / "reports" / "SentinelMesh_Capstone_Design_Report_Rohit_Raj_2301730179.pdf"
     html_to_pdf(html_file, target_pdf)
-    # Best-effort sync to generic filename if not locked by an external PDF viewer
-    generic_pdf = root / "reports" / "SentinelMesh_AI_Capstone_Report.pdf"
-    try:
-        generic_pdf.write_bytes(target_pdf.read_bytes())
-    except PermissionError:
-        pass
     size_mb = target_pdf.stat().st_size / (1024 * 1024)
     print(f"Generated PDF: {target_pdf} ({size_mb:.2f} MB)")
