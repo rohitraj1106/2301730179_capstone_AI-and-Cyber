@@ -1,5 +1,7 @@
 # SentinelMesh AI: Enterprise Threat Detection & Prevention System Design Report
 
+**Submitted By:** Rohit Raj · **Roll No.:** `2301730179` · **Email:** `2301730179@krmu.edu.in`  
+**Course Evaluation:** AI & Cybersecurity Capstone (120 Marks) · **GitHub:** https://github.com/rohitraj1106/2301730179_capstone_AI-and-Cyber  
 **Target Enterprise:** Meridian FinTech Inc. (~500 employees, 650 endpoints; AWS EKS/IAM, GCP BigQuery, Okta SSO, M365, GitHub Enterprise)  
 **Daily Scale:** ~1,850 avg EPS / ~7,800 peak EPS (~6.4 GB/day compressed Parquet)  
 **Compliance Alignment:** PCI-DSS v4.0, SOC 2 Type II, GDPR Art. 5 & Art. 22  

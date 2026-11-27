@@ -3,6 +3,7 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
 [![Tests](https://img.shields.io/badge/tests-pytest%204%2F4%20passing-brightgreen.svg)](#verification--tests)
 
+**Author:** Rohit Raj · **Roll No.:** `2301730179` · **Email:** `2301730179@krmu.edu.in` · **Capstone:** 120 Marks  
 **SentinelMesh AI** is a comprehensive AI-based Threat Detection, Explainable Alerting, and Adversarially Resilient SOAR prototype designed for a ~500-employee hybrid-cloud FinTech enterprise (**Meridian FinTech Inc.**).
 
 ## Deliverables in This Repository

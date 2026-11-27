@@ -44,7 +44,7 @@ def html_to_pdf(html_path: Path, pdf_path: Path) -> None:
                     footer_template=(
                         '<div style="font-size:8px;color:#64748b;width:100%;padding:0 18mm;'
                         'display:flex;justify-content:space-between;font-family:Segoe UI,Arial,sans-serif;">'
-                        '<span>AI &amp; Cybersecurity Capstone | 120 Marks Specification</span>'
+                        '<span>Rohit Raj (2301730179) · 2301730179@krmu.edu.in · Capstone (120 Marks)</span>'
                         '<span>Page <span class="pageNumber"></span> of <span class="totalPages"></span></span>'
                         '</div>'
                     ),
